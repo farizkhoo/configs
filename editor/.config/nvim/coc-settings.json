@@ -1,0 +1,13 @@
+{
+    "python.linting.lintOnSave": true,
+    "coc.preferences.formatOnType": true,
+    "coc.preferences.formatOnSaveFiletypes": ["python"],
+    "python.formatting.provider": "black",
+    "python.analysis.diagnosticEnabled": true,
+    "python.analysis.disabled": ["no-self-argument"],
+    "python.jediEnabled": false,
+    "python.linting.enabled": true,
+    "python.linting.flake8Enabled": true,
+    "python.linting.pylintEnabled": false,
+    "python.envFile": "${workspaceFolder}/.dev.env"
+}
