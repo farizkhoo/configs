@@ -29,6 +29,9 @@ Plug 'jiangmiao/auto-pairs'
 Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-fugitive'
 
+" Rust
+Plug 'rust-lang/rust.vim'
+
 call plug#end()
 
 syntax on
@@ -36,7 +39,6 @@ filetype plugin indent on
 set noequalalways
 
 colorscheme gruvbox
-let g:rainbow_active = 1
 
 set relativenumber
 autocmd Filetype python setlocal ts=8 sw=4 sts=4 expandtab
@@ -47,7 +49,6 @@ set splitbelow
 
 let g:python3_host_prog = '$PYENV_ROOT/versions/neovim3/bin/python'
 
-nnoremap <silent> <leader>p :GFiles --cached --others --exclude-standard<cr>
 
 let b:coc_root_patterns = ['.env']
 let g:rooter_patterns = ['.env', '.git', '.git/', '_darcs/', '.hg/', '.bzr/', '.svn/']
@@ -185,26 +186,9 @@ nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 " # Keyboard shortcuts
 " =============================================================================
 "
-nnoremap <C-k> <Esc>
-inoremap <C-k> <Esc>
-vnoremap <C-k> <Esc>
-snoremap <C-k> <Esc>
-xnoremap <C-k> <Esc>
-cnoremap <C-k> <Esc>
-onoremap <C-k> <Esc>
-lnoremap <C-k> <Esc>
-tnoremap <C-k> <Esc>
-
-nnoremap <leader>[  30j
-nnoremap <leader>]  30k
-
 nnoremap gs  :G<cr>
-nnoremap gb  :Git checkout -b 
-nnoremap ga  :Git add .<cr>
-nnoremap gr  :Git reset 
-nnoremap gc  :Gcommit<cr>
-nnoremap gps  :!git push --set-upstream origin 
-nnoremap gpl  :!git pull<cr>
+nnoremap <silent> <leader>p :GFiles --cached --others --exclude-standard<cr>
+tnoremap <silent> <leader>p <C-\><C-n>:GFiles --cached --others --exclude-standard<cr>
 
 " This unsets the "last search pattern" register by hitting return
 nnoremap <CR> :noh<CR><CR>
@@ -212,9 +196,13 @@ nnoremap <CR> :noh<CR><CR>
 " Buffer control
 nnoremap <leader><leader>  <C-^>
 tnoremap <leader><leader>  <C-\><C-n><C-^>
+nnoremap <leader>t  :b term<CR>A
 
 " ===========================================================================
 " # Custom commands
 " ===========================================================================
 "
 command Nvconfig :edit ~/.config/nvim/init.vim
+
+command Typecheck :!mypy getcar
+command TestFile :!pytest -vv -s %:p
