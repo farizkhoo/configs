@@ -1,18 +1,30 @@
 {
-	"python.linting.lintOnSave": true,
-	"coc.preferences.formatOnType": true,
-	"coc.preferences.formatOnSaveFiletypes": [
-		"python",
-		"rust"
-	],
-	"python.formatting.provider": "black",
-	"python.analysis.diagnosticEnabled": true,
-	"python.analysis.disabled": [
-		"no-self-argument"
-	],
-	"python.jediEnabled": false,
-	"python.linting.enabled": true,
-	"python.linting.flake8Enabled": true,
-	"python.linting.pylintEnabled": false,
-	"python.envFile": "${workspaceFolder}/.dev.env"
+  "languageserver": {
+    "golang": {
+      "command": "gopls",
+      "rootPatterns": ["go.work", "go.mod", ".vim/", ".git/", ".hg/"],
+      "filetypes": ["go"],
+      "initializationOptions": {
+        "usePlaceholders": true
+      }
+    }
+  },
+  "coc.preferences.formatOnType": true,
+  "coc.preferences.formatOnSaveFiletypes": [
+    "python",
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "python.linting.lintOnSave": true,
+  "python.formatting.provider": "black",
+  "python.analysis.diagnosticEnabled": true,
+  "python.analysis.disabled": ["no-self-argument"],
+  "python.jediEnabled": false,
+  "python.linting.enabled": true,
+  "python.linting.flake8Enabled": true,
+  "python.linting.pylintEnabled": false,
+  "python.linting.flake8Args": ["--ignore=E501,W503"],
+  "python.envFile": "${workspaceFolder}/.dev.env"
 }
