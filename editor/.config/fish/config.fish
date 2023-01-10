@@ -1,12 +1,12 @@
 set -x LC_ALL en_US.UTF-8
 set -x LANG en_US.UTF-8
-set -x GOPATH $HOME/Development/go-projects
-set -x GO111MODULE on
 set -x FZF_DEFAULT_COMMAND 'ag --hidden --ignore .git -g ""'
-set -x PATH $PATH $GOPATH/bin
 set -g fish_user_paths "$HOME/.poetry/bin"
 set -g fish_user_paths "/usr/local/sbin" $fish_user_paths
 set -gx fish_user_paths "$HOME/.cargo/bin" $fish_user_paths
+
+set -x GOPATH (go env GOPATH)
+set -x PATH $PATH (go env GOPATH)/bin
 
 # flutter
 

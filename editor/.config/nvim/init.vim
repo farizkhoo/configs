@@ -1,18 +1,23 @@
 set shell=/bin/bash
 
+if (has('termguicolors'))
+  set termguicolors
+endif
+
 " Here is my nvim config
 
 call plug#begin('~/.config/nvim/plugged')
 
 " GUI Enhancements
 Plug 'itchyny/lightline.vim'
+Plug 'mengelbrecht/lightline-bufferline'
 
 " Workspace
 Plug 'airblade/vim-rooter'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --bin' }
 Plug 'junegunn/fzf.vim'
 
-" Use release branch (Recommend)
+" Semantic language support
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " Color scheme
@@ -25,12 +30,24 @@ Plug 'Vimjas/vim-python-pep8-indent'
 Plug 'luochen1990/rainbow'
 Plug 'jiangmiao/auto-pairs'
 
+" Syntactic language support
+Plug 'rust-lang/rust.vim'
+Plug 'neoclide/vim-jsx-improve'
+Plug 'leafgarland/typescript-vim'
+Plug 'peitalin/vim-jsx-typescript'
+
+" GraphQL
+Plug 'jparise/vim-graphql'
+
 " Git
 Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-fugitive'
 
-" Rust
-Plug 'rust-lang/rust.vim'
+" Workflow
+Plug 'aserebryakov/vim-todo-lists'
+
+" Markdown preview
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install'  }
 
 call plug#end()
 
@@ -40,8 +57,20 @@ set noequalalways
 
 colorscheme gruvbox
 
+augroup filetype_jsx
+    autocmd!
+    autocmd FileType javascript set filetype=javascriptreact
+augroup END
+
 set relativenumber
-autocmd Filetype python setlocal ts=8 sw=4 sts=4 expandtab
+autocmd FileType python setlocal ts=8 sw=4 sts=4 expandtab
+autocmd FileType html setlocal ts=2 sw=2 expandtab
+autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+autocmd FileType json setlocal ts=4 sts=4 sw=4 expandtab
+autocmd FileType go setlocal ts=4 sw=4 sts=4 expandtab
+autocmd FileType sh setlocal ts=4 sw=4 sts=4 expandtab
+autocmd FileType javascriptreact setlocal ts=4 sw=4 sts=4 expandtab
+autocmd FileType typescriptreact setlocal ts=4 sw=4 sts=4 expandtab
 
 " Sane splits
 set splitright
@@ -49,11 +78,29 @@ set splitbelow
 
 let g:python3_host_prog = '$PYENV_ROOT/versions/neovim3/bin/python'
 
+nnoremap <silent> <leader>p :Files<cr>
 
 let b:coc_root_patterns = ['.env']
-let g:rooter_patterns = ['.env', '.git', '.git/', '_darcs/', '.hg/', '.bzr/', '.svn/']
+let g:rooter_patterns = ['poetry.lock', 'package.json', 'go.mod', '.gitlab-ci.yml', '.env', '.git', '.git/', '_darcs/', '.hg/', '.bzr/', '.svn/']
 
-" if hidden is not set, TextEdit might fail.
+" Bufferline setup
+let g:lightline#bufferline#show_number  = 1
+let g:lightline#bufferline#shorten_path = 0
+let g:lightline#bufferline#unnamed      = '[No Name]'
+let g:lightline#bufferline#filename_modifier = ':t'
+
+let g:lightline = {'colorscheme': 'gruvbox'}
+let g:lightline.tabline          = {'left': [['buffers']], 'right': [['close']]}
+let g:lightline.component_expand = {'buffers': 'lightline#bufferline#buffers'}
+let g:lightline.component_type   = {'buffers': 'tabsel'}
+
+
+set showtabline=2
+
+" Prettier command
+command! -nargs=0 Prettier :CocCommand prettier.formatFile
+
+"" if hidden is not set, TextEdit might fail.
 set hidden
 
 " Some servers have issues with backup files, see #649
@@ -75,14 +122,14 @@ set signcolumn=yes
 " Use tab for trigger completion with characters ahead and navigate.
 " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
 inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
+\ pumvisible() ? "\<C-n>" :
+\ <SID>check_back_space() ? "\<TAB>" :
+\ coc#refresh()
 inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
 function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
+let col = col('.') - 1
+return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 
 " Use <c-space> to trigger completion.
@@ -108,11 +155,11 @@ nmap <silent> gr <Plug>(coc-references)
 nnoremap <silent> K :call <SID>show_documentation()<CR>
 
 function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  else
-    call CocAction('doHover')
-  endif
+if (index(['vim','help'], &filetype) >= 0)
+execute 'h '.expand('<cword>')
+else
+call CocAction('doHover')
+endif
 endfunction
 
 " Highlight symbol under cursor on CursorHold
@@ -182,13 +229,15 @@ nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list
 nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 
+" Coc Explorer
+nmap <leader>e :CocCommand explorer<CR>
+
 " =============================================================================
 " # Keyboard shortcuts
 " =============================================================================
 "
 nnoremap gs  :G<cr>
-nnoremap <silent> <leader>p :GFiles --cached --others --exclude-standard<cr>
-tnoremap <silent> <leader>p <C-\><C-n>:GFiles --cached --others --exclude-standard<cr>
+nnoremap gp  :Git push<cr>
 
 " This unsets the "last search pattern" register by hitting return
 nnoremap <CR> :noh<CR><CR>
@@ -198,11 +247,23 @@ nnoremap <leader><leader>  <C-^>
 tnoremap <leader><leader>  <C-\><C-n><C-^>
 nnoremap <leader>t  :b term<CR>A
 
+nnoremap <leader>]  :bn<CR>
+nnoremap <leader>[  :bp<CR>
+
 " ===========================================================================
 " # Custom commands
 " ===========================================================================
 "
 command Nvconfig :edit ~/.config/nvim/init.vim
 
-command Typecheck :!mypy getcar
-command TestFile :!pytest -vv -s %:p
+" ===========================================================================
+" # Getcar test scripts
+" ===========================================================================
+"
+command TestFile :!pytest -vv -s %
+command TestModule :!pytest -vv -s %:p:h 
+command TestFileR :!pytest --include-psql -vv -s %
+command TestFiles :!./dev/test.sh
+command Typecheck :!./dev/typecheck.sh
+command FormatAll :!./dev/format.sh
+command Test :!yarn test
